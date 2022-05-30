@@ -8,7 +8,6 @@ use Laravel\Socialite\Two\InvalidStateException;
 use Laravel\Socialite\Two\ProviderInterface;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
-use App\Models\Fctoken;
 
 class Provider extends AbstractProvider implements ProviderInterface
 {
@@ -70,7 +69,7 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     public function redirect()
     {
-        $token = new Fctoken;
+        $token = new $this->getFctokenModel();
 
         $token->name = self::OPENID_SESSION_NONCE;
         $token->nonce = $this->getRandomToken();
@@ -89,7 +88,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     {
         $nonce = $this->request->session()->get(self::OPENID_SESSION_NONCE);
 
-        $token = Fctoken::whereNonce($nonce)->firstOrFail();
+        $token = $this->getFctokenModel()::whereNonce($nonce)->firstOrFail();
 
         return array_merge(parent::getCodeFields($state), [
             'nonce' => $nonce.'-'.$token->id,
@@ -148,6 +147,16 @@ class Provider extends AbstractProvider implements ProviderInterface
     }
 
     /**
+     * Get Fctoken model
+     *
+     * @return Model
+     */
+    private function getFctokenModel()
+    {
+        return env('FC_TOKEN_MODEL', 'App\Models\Fctoken');
+    }
+
+    /**
      * Determine if the current jwt / session has a mismatching "nonce".
      *
      * @return bool
@@ -163,7 +172,7 @@ class Provider extends AbstractProvider implements ProviderInterface
             return true;
         }
 
-        $token = Fctoken::find(last($data));
+        $token = $this->getFctokenModel()::find(last($data));
 
         if ($token == null) {
             return true;
