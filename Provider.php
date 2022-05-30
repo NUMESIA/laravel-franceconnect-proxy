@@ -153,7 +153,7 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     private function getFctokenModel()
     {
-        return env('FC_TOKEN_MODEL', 'App\Models\Fctoken');
+        return env('FRANCECONNECT_TOKEN_MODEL', 'App\Models\Fctoken');
     }
 
     /**

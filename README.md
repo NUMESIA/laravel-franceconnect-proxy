@@ -61,6 +61,7 @@ FRANCECONNECT_SANDBOX=true
 FRANCECONNECT_KEY=yourkeyfortheservice
 FRANCECONNECT_SECRET=yoursecretfortheservice
 FRANCECONNECT_REDIRECT_URI=https://example.com/login/franceconnect/callback
+FRANCECONNECT_TOKEN_MODEL=App\Models\Fctoken
 ```
 
 # USAGE
