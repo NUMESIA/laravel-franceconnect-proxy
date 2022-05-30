@@ -6,8 +6,8 @@
         "name": "Amine OUDJEHIH"
     }],
     "require": {
-        "php": "^5.6 || ^7.0",
-        "socialiteproviders/manager": "~2.0 || ~3.0",
+        "php": "^5.6 || ^7.0 || ^8.0",
+        "socialiteproviders/manager": "~2.0 || ~3.0 || ~4.0",
         "firebase/php-jwt": "~5.0"
     },
     "autoload": {
