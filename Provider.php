@@ -69,7 +69,9 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     public function redirect()
     {
-        $token = new $this->getFctokenModel();
+        $fctokenClass = $this->getFctokenModel();
+
+        $token = new $fctokenClass;
 
         $token->name = self::OPENID_SESSION_NONCE;
         $token->nonce = $this->getRandomToken();
