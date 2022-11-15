@@ -24,7 +24,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    protected $scopes = ["openid", "profile"];
+    protected $scopes = ["openid", "identite_pivot"];
 
     /**
      * {@inheritdoc}
