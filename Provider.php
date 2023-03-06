@@ -38,7 +38,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     {
         return $this->buildAuthUrlFromBase(
             $this->getServiceUrl() . '/api/v1/authorize', $state
-        );
+        ) . '&acr_values=eidas1';
     }
 
     /**
