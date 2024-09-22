@@ -8,6 +8,7 @@ use Laravel\Socialite\Two\InvalidStateException;
 use Laravel\Socialite\Two\ProviderInterface;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
+use Firebase\JWT\Key;
 
 class Provider extends AbstractProvider implements ProviderInterface
 {
@@ -37,7 +38,8 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function getAuthUrl($state)
     {
         return $this->buildAuthUrlFromBase(
-            $this->getServiceUrl() . '/api/v1/authorize', $state
+            $this->getServiceUrl() . '/api/v1/authorize',
+            $state
         ) . '&acr_values=eidas1';
     }
 
@@ -55,11 +57,13 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function getUserByToken($token)
     {
         $response = $this->getHttpClient()->get(
-            $this->getServiceUrl() . '/api/v1/userinfo', [
+            $this->getServiceUrl() . '/api/v1/userinfo',
+            [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $token,
                 ],
-            ]);
+            ]
+        );
 
         return json_decode($response->getBody()->getContents(), true);
     }
@@ -93,7 +97,7 @@ class Provider extends AbstractProvider implements ProviderInterface
         $token = $this->getFctokenModel()::whereNonce($nonce)->firstOrFail();
 
         return array_merge(parent::getCodeFields($state), [
-            'nonce' => $nonce.'-'.$token->id,
+            'nonce' => $nonce . '-' . $token->id,
         ]);
     }
 
@@ -133,8 +137,11 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id'    => $user['sub'], 'nickname' => null, 'name' => $user['given_name'] . ' ' . $user['family_name'],
-            'email' => $user['email'], 'avatar' => null,
+            'id'    => $user['sub'],
+            'nickname' => null,
+            'name' => $user['given_name'] . ' ' . $user['family_name'],
+            'email' => $user['email'],
+            'avatar' => null,
         ]);
     }
 
@@ -166,7 +173,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     private function hasInvalidNonce($jwt)
     {
         JWT::$leeway = 130;
-        $payload     = JWT::decode($jwt, $this->clientSecret, ['HS256']);
+        $payload     = JWT::decode($jwt, new Key($this->clientSecret, 'HS256'));
 
         $data = explode('-', $payload->nonce);
 
